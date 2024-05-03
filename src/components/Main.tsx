@@ -32,7 +32,7 @@ const Main = () => {
     animate: { top: "7px" },
     exit: { top: "100%" },
   });
-  const [boardDimensions, setBoardDimensions] = useState({ x: 35, y: 25 });
+  const [boardDimensions, setBoardDimensions] = useState({ x: 20, y: 20 });
   const [isCustomColor, setIsCustomColor] = useState(false);
   const [alertText, setAlertText] = useState("");
   const [color, setColor] = useState("255,255,0,1");

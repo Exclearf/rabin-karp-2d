@@ -5,8 +5,8 @@ const rabinKarp = (
   let patternRowLength = pattern.length;
   let patternColumnLength = pattern[0].length;
   let hash = calculateHash(pattern);
+  console.log(hash);
   let initialTextWindow = [[""]];
-
   for (let i = 0; i < patternRowLength; i++) {
     for (let j = 0; j < patternColumnLength; j++) {
       if (!initialTextWindow[i]) {
@@ -15,13 +15,16 @@ const rabinKarp = (
       initialTextWindow[i][j] = text[i][j];
     }
   }
+  console.log(initialTextWindow);
+  console.log(pattern);
+
   let initialTextWindowHash = calculateHash(initialTextWindow);
 
   let results: { x: number; y: number }[] = [];
   if (hash === initialTextWindowHash) {
     if (checkHashes(text, pattern, 0, 0)) {
-        results.push({ x: 0, y: 0 });
-      }
+      results.push({ x: 0, y: 0 });
+    }
   }
   getIndexes(text, pattern, initialTextWindowHash, hash, results);
   return results;
@@ -49,6 +52,11 @@ const getIndexes = (
       for (let i = rowIndex; i < rowIndex + pattern.length; i++) {
         columnToAdd[i - rowIndex] = text[i][columnIndex + pattern.length - 1];
       }
+      console.log(`Column to remove: `);
+      console.log(columnToRemove);
+      console.log(`Column to add: `);
+      console.log(columnToAdd);
+      console.log(`Prev hash: ${rowHash}`);
       rowHash =
         ((rowHash - rollHash(columnToRemove, pattern.length - 1)) * 255 +
           rollHash(columnToAdd, 0)) %
@@ -56,6 +64,7 @@ const getIndexes = (
       if (rowHash < 0) {
         rowHash += 29437;
       }
+      console.log(`Next hash: ${rowHash}`);
       if (rowHash == patternHash) {
         if (checkHashes(text, pattern, columnIndex, rowIndex)) {
           results.push({ x: columnIndex, y: rowIndex });
@@ -71,6 +80,9 @@ const getIndexes = (
       for (let i = 0; i < pattern.length; i++) {
         rowToAdd[i] = text[rowIndex + pattern.length][i];
       }
+      console.log(`Row to remove: ${rowToRemove}`);
+      console.log(`Row to add: ${rowToAdd}`);
+      console.log(`Prev hash: ${hash}`);
       hash =
         ((hash - rollHash(rowToRemove, pattern.length - 1)) * 255 +
           rollHash(rowToAdd, 0)) %
@@ -78,6 +90,7 @@ const getIndexes = (
       if (hash < 0) {
         hash += 29437;
       }
+      console.log(`Next hash: ${hash}`);
       if (hash == patternHash) {
         if (checkHashes(text, pattern, 0, rowIndex + 1)) {
           results.push({ x: 0, y: rowIndex + 1 });
@@ -87,15 +100,15 @@ const getIndexes = (
   }
 };
 
-const rollHash = (column: string[], power: number = 1) => {
+const rollHash = (column: string[], power: number) => {
   let hash = 0;
   for (let i = column.length - 1; i >= 0; i--) {
-    hash +=
-      (convertToNumber(column[i]) *
-        Math.pow(255, power) *
-        Math.pow(255, column.length - 1 - i)) %
+    hash =
+      (hash +
+        convertToNumber(column[i]) * Math.pow(255, column.length - 1 - i)) %
       29437;
   }
+  hash = hash * Math.pow(255, power);
   return hash % 29437;
 };
 
