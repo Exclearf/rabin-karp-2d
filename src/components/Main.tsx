@@ -29,10 +29,10 @@ const Main = () => {
   const isSearching = useRef(false);
   const alertVariants = useRef({
     initial: { top: "100%", transition: {} },
-    animate: { top: 0 },
+    animate: { top: "7px" },
     exit: { top: "100%" },
   });
-  const [boardDimensions, setBoardDimensions] = useState({ x: 35, y: 22 });
+  const [boardDimensions, setBoardDimensions] = useState({ x: 35, y: 25 });
   const [isCustomColor, setIsCustomColor] = useState(false);
   const [alertText, setAlertText] = useState("");
   const [color, setColor] = useState("255,255,0,1");
@@ -135,8 +135,8 @@ const Main = () => {
   };
 
   return (
-    <div style={{ height: "100%" }}>
-      <div className="padding" style={{ height: "10%" }}></div>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <div className="padding" style={{ height: "5%" }}></div>
       <div
         className={styles.settings}
         draggable="false"
@@ -372,7 +372,7 @@ const Main = () => {
                         placeholder="X"
                         className={styles.input}
                         min={1}
-                        max={20}
+                        max={35}
                         onChange={(e) => changeXDimension(e)}
                         value={boardDimensions.x}
                       />
@@ -381,7 +381,7 @@ const Main = () => {
                         placeholder="Y"
                         className={styles.input}
                         min={1}
-                        max={20}
+                        max={25}
                         onChange={(e) => changeYDimension(e)}
                         value={boardDimensions.y}
                       />
@@ -393,7 +393,7 @@ const Main = () => {
           </Sheet>
         </div>
       </div>
-      <div className={styles.boards} style={{ height: "65%" }}>
+      <div className={styles.boards}>
         <DrawingBoard
           boardDimensions={boardDimensions}
           drawColor={color}
@@ -421,7 +421,7 @@ const Main = () => {
           resetHandler={resetHandler}
         />
       </div>
-      <div style={{ height: "15%", position: "relative" }}>
+      <div style={{ flex: 1, position: "relative" }}>
         <AnimatePresence mode="wait">
           {alertText && (
             <motion.div
