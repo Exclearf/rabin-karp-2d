@@ -5,7 +5,7 @@ RUN apk add --no-cache curl
 WORKDIR /usr/src/app
 
 COPY .next .next
-COPY package.json package.json
+COPY package*.json ./
 
 RUN npm ci --only=production
 
