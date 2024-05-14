@@ -21,7 +21,7 @@ Build:
   artifacts:
     paths:
       - .next/   
-      - package.json
+      - package-lock.json
 
 Package:
   image: docker:24.0.9
