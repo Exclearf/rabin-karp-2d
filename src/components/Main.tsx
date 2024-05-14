@@ -32,6 +32,16 @@ const Main = () => {
     animate: { top: "7px" },
     exit: { top: "100%" },
   });
+  const dimensions = useRef({
+    x: {
+      min: 1,
+      max: 35,
+    },
+    y: {
+      min: 1,
+      max: 25,
+    },
+  });
   const [boardDimensions, setBoardDimensions] = useState({ x: 20, y: 10 });
   const [isCustomColor, setIsCustomColor] = useState(false);
   const [alertText, setAlertText] = useState("");
@@ -98,6 +108,13 @@ const Main = () => {
 
   const changeXDimension = (e: any) => {
     isSearching.current = false;
+    if (
+      !e.target.value ||
+      e.target.value == "0" ||
+      Number.parseInt(e.target.value) > dimensions.current.x.max
+    ) {
+      return;
+    }
     setBoardDimensions((prev) => ({
       x: Number(e.target.value),
       y: prev.y,
@@ -117,6 +134,13 @@ const Main = () => {
 
   const changeYDimension = (e: any) => {
     isSearching.current = false;
+    if (
+      !e.target.value ||
+      e.target.value == "0" ||
+      Number.parseInt(e.target.value) > dimensions.current.y.max
+    ) {
+      return;
+    }
     setBoardDimensions((prev) => ({
       x: prev.x,
       y: Number(e.target.value),
@@ -371,8 +395,8 @@ const Main = () => {
                         type="number"
                         placeholder="X"
                         className={styles.input}
-                        min={1}
-                        max={35}
+                        min={dimensions.current.x.min}
+                        max={dimensions.current.x.max}
                         onChange={(e) => changeXDimension(e)}
                         value={boardDimensions.x}
                       />
@@ -380,8 +404,8 @@ const Main = () => {
                         type="number"
                         placeholder="Y"
                         className={styles.input}
-                        min={1}
-                        max={25}
+                        min={dimensions.current.y.min}
+                        max={dimensions.current.y.max}
                         onChange={(e) => changeYDimension(e)}
                         value={boardDimensions.y}
                       />
