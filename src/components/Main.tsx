@@ -32,7 +32,7 @@ const Main = () => {
     animate: { top: "7px" },
     exit: { top: "100%" },
   });
-  const [boardDimensions, setBoardDimensions] = useState({ x: 20, y: 20 });
+  const [boardDimensions, setBoardDimensions] = useState({ x: 20, y: 10 });
   const [isCustomColor, setIsCustomColor] = useState(false);
   const [alertText, setAlertText] = useState("");
   const [color, setColor] = useState("255,255,0,1");
@@ -422,7 +422,7 @@ const Main = () => {
         />
       </div>
       <div style={{ flex: 1, position: "relative" }}>
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           {alertText && (
             <motion.div
               key="popUp"
@@ -448,6 +448,7 @@ const Main = () => {
           )}
         </AnimatePresence>
       </div>
+      <div className="root" data-index="123"></div>
     </div>
   );
 };
