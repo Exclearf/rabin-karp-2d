@@ -12,7 +12,7 @@ This is a simple implementation of rabin-karp string matching algorithm extended
 
 OR
 
-- Visit it [hosted here]("https://rabin-karp.encape.me")
+- Visit it [hosted here](https://rabin-karp.encape.me)
 
 ## What is used?
 

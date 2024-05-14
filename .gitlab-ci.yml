@@ -1,0 +1,43 @@
+stages:
+  - build
+  - package
+  - deploy
+
+variables:
+  IMAGE_TAG: rabin_karp_$CI_COMMIT_SHORT_SHA
+  DOCKER_USERNAME: $DOCKER_USERNAME
+  DOCKER_PASSWORD: $DOCKER_PASSWORD
+  IMAGE_NAME: "true-shuffle"
+
+Build:
+  image: node:21-alpine3.18
+  stage: build
+  tags:
+    - docker
+  before_script:
+    - npm ci
+  script:
+    - npm run build
+
+Package:
+  image: docker:24.0.9
+  stage: package
+  tags:
+    - docker
+  variables:
+    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_TLS_CERTDIR: ""
+  services:
+    - docker:24.0.9-dind
+  before_script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  script:
+    - docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
+    - docker push $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG
+
+Deploy:
+  stage: deploy
+  tags:
+    - bash
+  script:
+    - /scripts/deployRabinKarp.sh $DOCKER_USERNAME $DOCKER_PASSWORD $IMAGE_NAME $IMAGE_TAG
