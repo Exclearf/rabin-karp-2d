@@ -18,6 +18,11 @@ Build:
     - npm ci
   script:
     - npm run build
+  artifacts:
+    paths:
+      - .next/
+      - node_modules/
+      - package.json
 
 Package:
   image: docker:24.0.9

@@ -4,12 +4,14 @@ RUN apk add --no-cache curl
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY .next .next
+COPY node_modules node_modules
+COPY package.json package.json
 
 RUN npm ci --only=production
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 3002
 
 CMD ["npm", "start"]
