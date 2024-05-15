@@ -53,7 +53,6 @@ const getIndexes = (
 ) => {
   for (let rowIndex = 0; rowIndex <= text.length - pattern.length; rowIndex++) {
     let rowHash = hash;
-    console.log("new row");
     for (
       let columnIndex = 1;
       columnIndex < text[0].length - pattern.length + 1;
@@ -65,23 +64,24 @@ const getIndexes = (
           columnToAdd[i - rowIndex] = text[i][columnIndex + pattern.length - 1];
         }
         let columnToRemoveHash = columnHashes[columnIndex - 1];
-        let columnToAddHash = rollHash(columnToAdd) % 29437;
+        let columnToAddHash = rollHash(columnToAdd) & (Math.pow(2, 16) - 1);
         columnHashes.push(columnToAddHash);
         if (columnToRemoveHash < 0) {
-          columnToRemoveHash += 29437;
+          columnToRemoveHash += Math.pow(2, 16) - 1;
         }
         if (columnToAddHash < 0) {
-          columnToAddHash += 29437;
+          columnToAddHash += Math.pow(2, 16) - 1;
         }
         rowHash =
-          (((((rowHash % 29437) -
-            ((columnToRemoveHash * 255 ** (pattern.length - 1)) % 29437)) *
-            255) %
-            29437) +
-            columnToAddHash * 1) %
-          29437;
+          (((((rowHash & (Math.pow(2, 16) - 1)) -
+            ((columnToRemoveHash * 255 ** (pattern.length - 1)) &
+              (Math.pow(2, 16) - 1))) *
+            255) &
+            (Math.pow(2, 16) - 1)) +
+            columnToAddHash * 1) &
+          (Math.pow(2, 16) - 1);
         if (rowHash < 0) {
-          rowHash += 29437;
+          rowHash += Math.pow(2, 16) - 1;
         }
         //console.log(`Next hash: ${rowHash}`);
         if (rowHash == patternHash) {
@@ -93,38 +93,38 @@ const getIndexes = (
         let columnToRemoveHash =
           (((((columnHashes[columnIndex - 1] -
             convertToNumber(text[rowIndex - 1][columnIndex - 1]) *
-              Math.pow(255, pattern.length - 1)) %
-            29437) *
-            255) %
-            29437) +
+              Math.pow(255, pattern.length - 1)) &
+            (Math.pow(2, 16) - 1)) *
+            255) &
+            (Math.pow(2, 16) - 1)) +
             convertToNumber(
               text[rowIndex + pattern.length - 1][columnIndex - 1]
-            )) %
-          29437;
-        columnToRemoveHash = columnToRemoveHash % 29437;
+            )) &
+          (Math.pow(2, 16) - 1);
+        columnToRemoveHash = columnToRemoveHash & (Math.pow(2, 16) - 1);
         let columnToAddHash =
           (((((columnHashes[columnIndex + pattern.length - 1] -
             ((convertToNumber(
               text[rowIndex - 1][columnIndex + pattern.length - 1]
             ) *
-              Math.pow(255, pattern.length - 1)) %
-              29437)) %
-            29437) *
-            255) %
-            29437) +
+              Math.pow(255, pattern.length - 1)) &
+              (Math.pow(2, 16) - 1))) &
+            (Math.pow(2, 16) - 1)) *
+            255) &
+            (Math.pow(2, 16) - 1)) +
             convertToNumber(
               text[rowIndex + pattern.length - 1][
                 columnIndex + pattern.length - 1
               ]
-            )) %
-          29437;
-        columnToAddHash = columnToAddHash % 29437;
+            )) &
+          (Math.pow(2, 16) - 1);
+        columnToAddHash = columnToAddHash & (Math.pow(2, 16) - 1);
 
         if (columnToRemoveHash < 0) {
-          columnToRemoveHash += 29437;
+          columnToRemoveHash += Math.pow(2, 16) - 1;
         }
         if (columnToAddHash < 0) {
-          columnToAddHash += 29437;
+          columnToAddHash += Math.pow(2, 16) - 1;
         }
 
         columnHashes.splice(columnIndex - 1, 1, columnToRemoveHash);
@@ -143,16 +143,16 @@ const getIndexes = (
         console.log(columnToRemoveHash);
 
         rowHash =
-          (((((rowHash % 29437) -
-            ((columnToRemoveHash * 255 ** (pattern.length - 1)) % 29437)) *
-            255) %
-            29437) +
-            columnToAddHash * 1) %
-          29437;
+          ((((rowHash -
+            ((columnToRemoveHash * 255 ** (pattern.length - 1)) &
+              (Math.pow(2, 16) - 1))) *
+            255) &
+            (Math.pow(2, 16) - 1)) +
+            columnToAddHash * 1) &
+          (Math.pow(2, 16) - 1);
         if (rowHash < 0) {
-          rowHash += 29437;
+          rowHash += Math.pow(2, 16) - 1;
         }
-        //console.log(`Next1 hash: ${rowHash}`);
         if (rowHash == patternHash) {
           if (checkHashes(text, pattern, columnIndex, rowIndex)) {
             results.push({ x: columnIndex, y: rowIndex });
@@ -161,7 +161,6 @@ const getIndexes = (
       }
     }
     if (rowIndex != text.length - pattern.length) {
-      console.log(columnHashes);
       let rowToRemove = [""];
       let rowToAdd = [""];
       for (let i = 0; i < pattern.length; i++) {
@@ -175,16 +174,16 @@ const getIndexes = (
       const rowToAddHash = rollHash(rowToAdd);
       rowHashes.push(rowToAddHash);
       hash =
-        (((((hash % 29437) -
-          ((rowToRemoveHash * 255 ** (pattern.length - 1)) % 29437)) *
-          255) %
-          29437) +
-          rowToAddHash * 1) %
-        29437;
+        ((((hash -
+          ((rowToRemoveHash * 255 ** (pattern.length - 1)) &
+            (Math.pow(2, 16) - 1))) *
+          255) &
+          (Math.pow(2, 16) - 1)) +
+          rowToAddHash * 1) &
+        (Math.pow(2, 16) - 1);
       if (hash < 0) {
-        hash += 29437;
+        hash += Math.pow(2, 16) - 1;
       }
-      //console.log(`Next hash: ${hash}`);
       if (hash == patternHash) {
         if (checkHashes(text, pattern, 0, rowIndex + 1)) {
           results.push({ x: 0, y: rowIndex + 1 });
@@ -199,10 +198,10 @@ const rollHash = (column: string[]) => {
   for (let i = column.length - 1; i >= 0; i--) {
     hash =
       (hash +
-        convertToNumber(column[i]) * Math.pow(255, column.length - 1 - i)) %
-      29437;
+        convertToNumber(column[i]) * Math.pow(255, column.length - 1 - i)) &
+      (Math.pow(2, 16) - 1);
   }
-  return hash % 29437;
+  return hash & (Math.pow(2, 16) - 1);
 };
 
 const checkHashes = (
@@ -228,17 +227,17 @@ const calculateHash = (pattern: string[][], columnHashes: number[]) => {
     for (let rowIndex = pattern[0].length - 1; rowIndex >= 0; rowIndex--) {
       columnHash +=
         (convertToNumber(pattern[rowIndex][columnIndex]) *
-          Math.pow(255, pattern[0].length - 1 - rowIndex)) %
-        29437;
+          Math.pow(255, pattern[0].length - 1 - rowIndex)) &
+        (Math.pow(2, 16) - 1);
     }
-    columnHashes.splice(0, 0, columnHash % 29437);
+    columnHashes.splice(0, 0, columnHash & (Math.pow(2, 16) - 1));
     hash =
       (hash +
-        ((columnHash * Math.pow(255, pattern.length - 1 - columnIndex)) %
-          29437)) %
-      29437;
+        ((columnHash * Math.pow(255, pattern.length - 1 - columnIndex)) &
+          (Math.pow(2, 16) - 1))) &
+      (Math.pow(2, 16) - 1);
   }
-  return hash % 29437;
+  return hash & (Math.pow(2, 16) - 1);
 };
 
 const calculateRowHash = (pattern: string[][], rowHashes: number[]) => {
@@ -251,10 +250,10 @@ const calculateRowHash = (pattern: string[][], rowHashes: number[]) => {
     ) {
       columnHash +=
         (convertToNumber(pattern[rowIndex][columnIndex]) *
-          Math.pow(255, pattern[0].length - 1 - columnIndex)) %
-        29437;
+          Math.pow(255, pattern[0].length - 1 - columnIndex)) &
+        (Math.pow(2, 16) - 1);
     }
-    rowHashes.splice(0, 0, columnHash % 29437);
+    rowHashes.splice(0, 0, columnHash & (Math.pow(2, 16) - 1));
   }
 };
 
